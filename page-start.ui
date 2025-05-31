@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>LoginDialog</class>
+ <widget class="QDialog" name="LoginDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SosyalPiyon - Giriş</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QDialog {
+    background-color: #1a1a1a;
+}
+QWidget {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #ffffff;
+}
+QLineEdit {
+    border: 1px solid #3d3d3d;
+    border-radius: 8px;
+    padding: 12px;
+    background: #2d2d2d;
+    color: #ffffff;
+    font-size: 14px;
+    min-height: 20px;
+}
+QLineEdit:focus {
+    border-color: #4CAF50;
+}
+QPushButton {
+    background-color: transparent;
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    min-height: 20px;
+}
+QPushButton:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+QPushButton#registerButton {
+    background-color: transparent;
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+}
+QPushButton#registerButton:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+QLabel {
+    color: #ffffff;
+}
+QLabel#logoLabel {
+    font-size: 36px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+QLabel#welcomeLabel {
+    font-size: 18px;
+    color: #ffffff;
+}
+QLabel#descriptionLabel {
+    font-size: 16px;
+    color: #b0b0b0;
+}
+QLabel#switchLabel {
+    color: #4CAF50;
+    font-size: 14px;
+    padding: 12px 24px;
+    border: 2px solid #4CAF50;
+    border-radius: 8px;
+    background-color: transparent;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+}
+QLabel#switchLabel:hover {
+    color: white;
+    background-color: #4CAF50;
+    cursor: pointer;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
+QCheckBox {
+    color: #ffffff;
+    font-size: 14px;
+    spacing: 8px;
+}
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4CAF50;
+    border-radius: 4px;
+    background-color: transparent;
+}
+QCheckBox::indicator:checked {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+QCheckBox::indicator:hover {
+    border-color: #45a049;
+}
+QLabel#forgotPasswordLink {
+    color: #4CAF50;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 5px 0;
+}
+QLabel#forgotPasswordLink:hover {
+    color: #45a049;
+}
+</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QWidget" name="leftPanel" native="true">
+     <property name="styleSheet">
+      <string notr="true">background-color: #2d2d2d;</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>150</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLabel" name="logoLabel">
+        <property name="text">
+         <string>SosyalPiyon</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="welcomeLabel">
+        <property name="text">
+         <string>Satranç Dünyasına Hoş Geldiniz</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="descriptionLabel">
+        <property name="text">
+         <string>Satranç tutkunlarıyla buluşun, sohbet edin,stratejilerinizi paylaşın ve yeni arkadaşlar edinin.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>150</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="rightPanel" native="true">
+     <property name="styleSheet">
+      <string notr="true">background-color: #1a1a1a;</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>100</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>2</number>
+        </property>
+        <widget class="QWidget" name="loginPage">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="loginTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Giriş Yap</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="usernameInput">
+            <property name="placeholderText">
+             <string>Kullanıcı adınızı girin</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="passwordInput">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Şifrenizi girin</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="forgotPasswordLink">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+text-decoration: underline;
+cursor: pointer;
+margin: 5px 0;</string>
+            </property>
+            <property name="text">
+             <string>Şifremi Unuttum</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="loginButton">
+            <property name="text">
+             <string>Giriş Yap</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_7">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="switchToRegister">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+padding: 12px 24px;
+border: 2px solid #4CAF50;
+border-radius: 8px;
+background-color: transparent;
+margin: 10px 0;
+transition: all 0.3s ease;</string>
+            </property>
+            <property name="text">
+             <string>Hesabınız yok mu? Kayıt olun</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="registerPage">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="registerTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Kayıt Ol</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="fullNameInput">
+            <property name="placeholderText">
+             <string>Adınız ve soyadınız</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="registerUsernameInput">
+            <property name="placeholderText">
+             <string>Kullanıcı adı</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="emailInput">
+            <property name="placeholderText">
+             <string>E-posta adresiniz</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_10_1">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="registerPasswordInput">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Şifre</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="confirmPasswordInput">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Şifrenizi tekrar girin</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_11_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="privacyCheckbox">
+            <property name="text">
+             <string>Gizlilik sözleşmesini okudum ve kabul ediyorum</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="privacyLink">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+text-decoration: underline;</string>
+            </property>
+            <property name="text">
+             <string>Gizlilik sözleşmesini oku</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_11_1">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="registerButton">
+            <property name="text">
+             <string>Kayıt Ol</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="switchToLogin">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+padding: 12px 24px;
+border: 2px solid #4CAF50;
+border-radius: 8px;
+background-color: transparent;
+margin: 10px 0;
+transition: all 0.3s ease;</string>
+            </property>
+            <property name="text">
+             <string>Zaten hesabınız var mı? Giriş yapın</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="privacyPage">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="privacyTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Gizlilik Sözleşmesi</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTextEdit" name="privacyText">
+            <property name="styleSheet">
+             <string notr="true">background-color: #2d2d2d;
+color: #ffffff;
+border: 1px solid #3d3d3d;
+border-radius: 8px;
+padding: 12px;
+font-size: 14px;</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="text" stdset="0">
+             <string>1. Kişisel Verilerin Korunması
+- Kullanıcı bilgileriniz güvenli bir şekilde saklanır
+- Üçüncü taraflarla paylaşılmaz
+- KVKK kapsamında korunur
+
+2. Veri Kullanımı
+- Hesap yönetimi için kullanılır
+- Hizmet kalitesini artırmak için analiz edilir
+- Spam ve kötüye kullanımı önlemek için kullanılır
+
+3. Çerezler
+- Oturum yönetimi için kullanılır
+- Kullanıcı tercihlerini hatırlamak için kullanılır
+- Güvenlik için kullanılır
+
+4. Güvenlik
+- SSL şifreleme kullanılır
+- Düzenli güvenlik güncellemeleri yapılır
+- Veri yedekleme sistemleri mevcuttur</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="backToRegisterButton">
+            <property name="text">
+             <string>Geri Dön</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="forgotPasswordPage">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="forgotPasswordTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Şifremi Unuttum</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="forgotPasswordDescription">
+            <property name="styleSheet">
+             <string notr="true">color: #b0b0b0;
+font-size: 14px;
+text-align: center;</string>
+            </property>
+            <property name="text">
+             <string>E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="forgotPasswordEmailInput">
+            <property name="placeholderText">
+             <string>E-posta adresiniz</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="sendResetLinkButton">
+            <property name="text">
+             <string>Şifre Sıfırlama Bağlantısı Gönder</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="backToLoginLink">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+text-decoration: underline;
+cursor: pointer;
+margin: 5px 0;</string>
+            </property>
+            <property name="text">
+             <string>Giriş sayfasına dön</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="emailVerificationPage">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLabel" name="verificationTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>E-posta Doğrulama</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="verificationDescription">
+            <property name="styleSheet">
+             <string notr="true">color: #b0b0b0;
+font-size: 14px;
+text-align: center;</string>
+            </property>
+            <property name="text">
+             <string>E-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="verificationCodeInput">
+            <property name="maxLength">
+             <number>6</number>
+            </property>
+            <property name="placeholderText">
+             <string>Doğrulama kodu</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="verifyCodeButton">
+            <property name="text">
+             <string>Doğrula</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="resendCodeLink">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+text-decoration: underline;
+cursor: pointer;
+margin: 5px 0;</string>
+            </property>
+            <property name="text">
+             <string>Kodu tekrar gönder</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="resetPasswordPage">
+         <layout class="QVBoxLayout" name="verticalLayout_8">
+          <item>
+           <widget class="QLabel" name="resetPasswordTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Şifre Sıfırlama</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="resetPasswordDescription">
+            <property name="styleSheet">
+             <string notr="true">color: #b0b0b0;
+font-size: 14px;
+text-align: center;</string>
+            </property>
+            <property name="text">
+             <string>E-posta adresinize gönderilen 6 haneli doğrulama kodunu girin.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="resetCodeInput">
+            <property name="maxLength">
+             <number>6</number>
+            </property>
+            <property name="placeholderText">
+             <string>Doğrulama kodu</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="verifyResetCodeButton">
+            <property name="text">
+             <string>Kodu Doğrula</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="resendResetCodeLink">
+            <property name="styleSheet">
+             <string notr="true">color: #4CAF50;
+font-size: 14px;
+text-decoration: underline;
+cursor: pointer;
+margin: 5px 0;</string>
+            </property>
+            <property name="text">
+             <string>Kodu tekrar gönder</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="newPasswordPage">
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QLabel" name="newPasswordTitle">
+            <property name="styleSheet">
+             <string notr="true">font-size: 24px;
+font-weight: bold;
+color: #ffffff;</string>
+            </property>
+            <property name="text">
+             <string>Yeni Şifre Belirleme</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_14">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="newPasswordDescription">
+            <property name="styleSheet">
+             <string notr="true">color: #b0b0b0;
+font-size: 14px;
+text-align: center;</string>
+            </property>
+            <property name="text">
+             <string>Lütfen yeni şifrenizi belirleyin.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="newPasswordInput">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Yeni şifre</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="confirmNewPasswordInput">
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Yeni şifrenizi tekrar girin</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_15">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="saveNewPasswordButton">
+            <property name="text">
+             <string>Şifreyi Kaydet</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_13">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>100</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
