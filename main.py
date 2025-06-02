@@ -11,6 +11,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import mysql.connector
 from mysql.connector import Error
+from itsdangerous import URLSafeTimedSerializer
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import os
+import random
+import string
 
 
 class DatabaseConnection:
@@ -576,7 +583,7 @@ class LoginDialog(QtWidgets.QDialog):
         
         # Tıklama olaylarını bağla
         self.db = DatabaseConnection()
-        self.ui.loginButton.clicked.connect(self.handle_login)
+        self.ui.loginButton.clicked.connect(self.login)
         self.ui.registerButton.clicked.connect(self.register)
         self.ui.switchToRegister.mousePressEvent = self.switch_to_register
         self.ui.switchToLogin.mousePressEvent = self.switch_to_login
@@ -592,62 +599,217 @@ class LoginDialog(QtWidgets.QDialog):
         self.ui.saveNewPasswordButton.clicked.connect(self.handle_save_new_password)
         
 
-    def handle_login(self):
+    def login(self):
         username = self.ui.usernameInput.text()
         password = self.ui.passwordInput.text()
-        # Giriş işlemleri burada yapılacak
-        print(f"Giriş yapılıyor: {username}")
+
+        conn = self.db.get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT * FROM users WHERE username = %s AND password_hash = %s
+        """, (username, password))
+
+        result = cursor.fetchone()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if result:
+            print(f"Giriş yapılıyor: {username}")
+        else:
+            print("Kullanıcı adı veya şifre hatalı.")
 
     def register(self):
         if not self.ui.privacyCheckbox.isChecked():
             QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen gizlilik sözleşmesini kabul edin.")
             return
             
-        full_name = self.ui.fullNameInput.text()
-        username = self.ui.registerUsernameInput.text()
-        email = self.ui.emailInput.text()
+        full_name = self.ui.fullNameInput.text().strip()
+        username = self.ui.registerUsernameInput.text().strip()
+        email = self.ui.emailInput.text().strip()
         password = self.ui.registerPasswordInput.text()
         confirm_password = self.ui.confirmPasswordInput.text()
         
+        if not all([full_name, username, email, password, confirm_password]):
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen tüm alanları doldurun.")
+            return
+            
         if password != confirm_password:
             QtWidgets.QMessageBox.warning(self, "Uyarı", "Şifreler eşleşmiyor!")
             return
-        
-        else:
-            try:
-
-                full_name = self.ui.fullNameInput.text().strip()
-                name_parts = full_name.split()
-                firstname = name_parts[0]
-                lastname = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
-                connection = self.db.get_connection()
-                cursor = self.db.get_connection().cursor()
-
-                cursor.execute("""
-                    INSERT INTO users (username, firstname, lastname, email, 
-                                        password_hash)
-                    VALUES (%s, %s, %s, %s, %s)
-                """,(username,firstname,lastname,email,password))
-
-                cursor.execute("""
-                    SELECT * FROM users WHERE username = %s;
-                """,(username,))
-                result = cursor.fetchone()
-                user_id = result[0] if result else None
-
-                cursor.execute("""
-                    INSERT INTO privacy_policy_acceptance (user_id, policy_version)
-                    VALUES (%s, %s)
-                """,(user_id,1))
-                connection.commit()
-                QtWidgets.QMessageBox.information(self, "Başarılı", "Kayıt başarılı!")
-            except Exception as e:
-                QtWidgets.QMessageBox.critical(self, "Hata", f"Veritabanı hatası: {e}")
-                print(f"Veritabanı hatası: {e}")
-
             
-        # Kayıt işlemleri burada yapılacak
-        print(f"Kayıt yapılıyor: {username}")
+        # E-posta formatını kontrol et
+        if '@' not in email or '.' not in email:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen geçerli bir e-posta adresi girin.")
+            return
+            
+        try:
+            # Kullanıcı adı ve e-posta kontrolü
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            
+            cursor.execute("SELECT id FROM users WHERE username = %s OR email = %s", (username, email))
+            if cursor.fetchone():
+                QtWidgets.QMessageBox.warning(self, "Uyarı", "Bu kullanıcı adı veya e-posta adresi zaten kullanılıyor.")
+                return
+                
+            # 6 haneli doğrulama kodu oluştur
+            verification_code = ''.join(random.choices(string.digits, k=6))
+            
+            # Doğrulama kodunu veritabanına kaydet
+            cursor.execute("""
+                INSERT INTO email_verification_codes (email, code, created_at)
+                VALUES (%s, %s, NOW())
+            """, (email, verification_code))
+            connection.commit()
+            
+            # E-posta gönderme işlemi
+            sender_email = "sosyalpiyon@gmail.com"
+            sender_password = "alyy pxax qtkx bfbk"
+            
+            message = MIMEMultipart()
+            message["From"] = sender_email
+            message["To"] = email
+            message["Subject"] = "SosyalPiyon - E-posta Doğrulama Kodu"
+            
+            body = f"""
+            Merhaba {full_name},
+
+            SosyalPiyon'a hoş geldiniz! Hesabınızı aktifleştirmek için aşağıdaki doğrulama kodunu kullanın:
+
+            {verification_code}
+
+            Bu kod 1 saat geçerlidir.
+
+            Saygılarımızla,
+            SosyalPiyon Ekibi
+            """
+            
+            message.attach(MIMEText(body, "plain"))
+            
+            # E-postayı gönder
+            with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(message)
+            
+            # Kullanıcı bilgilerini geçici olarak sakla
+            self.temp_user_data = {
+                'full_name': full_name,
+                'username': username,
+                'email': email,
+                'password': password
+            }
+            
+            # Doğrulama sayfasına yönlendir
+            self.ui.stackedWidget.setCurrentWidget(self.ui.emailVerificationPage)
+            QtWidgets.QMessageBox.information(self, "Başarılı", "Doğrulama kodu e-posta adresinize gönderildi.")
+            
+        except Exception as e:
+            error_message = f"Kayıt işlemi sırasında bir hata oluştu: {str(e)}"
+            print(error_message)
+            QtWidgets.QMessageBox.critical(self, "Hata", error_message)
+
+    def forget_token(self, user_email):
+        try:
+            # 6 haneli rastgele kod oluştur
+            token = ''.join(random.choices(string.digits, k=6))
+            
+            try:
+                # E-posta gönderme işlemi
+                sender_email = "sosyalpiyon@gmail.com"
+                sender_password = "alyy pxax qtkx bfbk"
+
+                # E-posta mesajını oluştur
+                message = MIMEMultipart()
+                message["From"] = sender_email
+                message["To"] = user_email
+                message["Subject"] = "SosyalPiyon - Şifre Sıfırlama Kodu"
+
+                body = f"""
+                Merhaba,
+
+                Şifre sıfırlama talebiniz alındı. Şifrenizi sıfırlamak için aşağıdaki kodu kullanın:
+
+                {token}
+
+                Bu kod 1 saat geçerlidir.
+
+                Eğer bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayın.
+
+                Saygılarımızla,
+                SosyalPiyon Ekibi
+                """
+
+                message.attach(MIMEText(body, "plain"))
+
+                # SMTP sunucusuna bağlan ve e-postayı gönder
+                with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                    server.starttls()
+                    print("SMTP sunucusuna bağlanılıyor...")
+                    server.login(sender_email, sender_password)
+                    print("Giriş başarılı, e-posta gönderiliyor...")
+                    server.send_message(message)
+                    print("E-posta gönderildi!")
+
+                print(f"E-posta başarıyla gönderildi: {user_email}")
+                
+            except smtplib.SMTPAuthenticationError as auth_error:
+                print(f"Kimlik doğrulama hatası: {str(auth_error)}")
+                return False, "E-posta kimlik doğrulama hatası. Lütfen uygulama şifresini kontrol edin."
+            except Exception as email_error:
+                print(f"E-posta gönderme hatası detayı: {str(email_error)}")
+                return False, f"E-posta gönderilirken bir hata oluştu: {str(email_error)}"
+            
+            try:
+                # Önce tablonun varlığını kontrol et
+                connection = self.db.get_connection()
+                cursor = connection.cursor()
+                cursor.execute("SHOW TABLES LIKE 'password_reset_tokens'")
+                if not cursor.fetchone():
+                    # Tablo yoksa oluştur
+                    cursor.execute("""
+                        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                            id INT AUTO_INCREMENT PRIMARY KEY,
+                            email VARCHAR(255) NOT NULL,
+                            token VARCHAR(6) NOT NULL,
+                            created_at DATETIME NOT NULL
+                        )
+                    """)
+                    connection.commit()
+                    print("password_reset_tokens tablosu oluşturuldu")
+                
+                # Token'ı veritabanına kaydet
+                cursor.execute("""
+                    INSERT INTO password_reset_tokens (email, token, created_at)
+                    VALUES (%s, %s, NOW())
+                """, (user_email, token))
+                connection.commit()
+                print("Token veritabanına kaydedildi")
+                
+            except Exception as db_error:
+                error_message = f"Veritabanı hatası detayı: {str(db_error)}"
+                print(error_message)
+                return False, error_message
+            
+            return True, "Şifre sıfırlama kodu e-posta adresinize gönderildi."
+            
+        except Exception as e:
+            error_message = f"Genel hata detayı: {str(e)}"
+            print(error_message)
+            return False, error_message
+
 
     def switch_to_register(self, event=None):
         self.ui.stackedWidget.setCurrentWidget(self.ui.registerPage)
@@ -662,23 +824,142 @@ class LoginDialog(QtWidgets.QDialog):
         self.ui.stackedWidget.setCurrentWidget(self.ui.privacyPage)
 
     def handle_send_reset_link(self):
-        email = self.ui.forgotPasswordEmailInput.text()
-        # Şifre sıfırlama bağlantısı gönderme işlemleri burada yapılacak
-        print(f"Şifre sıfırlama bağlantısı gönderiliyor: {email}")
+        email = self.ui.forgotPasswordEmailInput.text().strip()
+        
+        if not email:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen e-posta adresinizi girin.")
+            return
+            
+        # E-posta formatını kontrol et
+        if '@' not in email or '.' not in email:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen geçerli bir e-posta adresi girin.")
+            return
+            
+        # E-posta adresinin veritabanında olup olmadığını kontrol et
+        try:
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+            if not cursor.fetchone():
+                QtWidgets.QMessageBox.warning(self, "Uyarı", "Bu e-posta adresi ile kayıtlı bir hesap bulunamadı.")
+                return
+                
+            # Token oluştur ve e-posta gönder
+            success, message = self.forget_token(email)
+            
+            if success:
+                QtWidgets.QMessageBox.information(self, "Başarılı", message)
+                self.ui.stackedWidget.setCurrentWidget(self.ui.resetPasswordPage)
+            else:
+                QtWidgets.QMessageBox.critical(self, "Hata", message)
+                print(f"Şifre sıfırlama hatası: {message}")
+                
+        except Exception as e:
+            error_message = f"Bir hata oluştu: {str(e)}"
+            QtWidgets.QMessageBox.critical(self, "Hata", error_message)
+            print(f"Genel hata: {error_message}")
 
     def handle_verify_code(self):
-        code = self.ui.verificationCodeInput.text()
-        # Doğrulama kodu kontrolü burada yapılacak
-        print(f"Doğrulama kodu kontrol ediliyor: {code}")
+        code = self.ui.verificationCodeInput.text().strip()
+        
+        if not code:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen doğrulama kodunu girin.")
+            return
+            
+        try:
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            
+            # Kodu kontrol et
+            cursor.execute("""
+                SELECT email FROM email_verification_codes 
+                WHERE code = %s AND email = %s 
+                AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            """, (code, self.temp_user_data['email']))
+            
+            result = cursor.fetchone()
+            
+            if result:
+                # Kullanıcıyı kaydet
+                full_name = self.temp_user_data['full_name']
+                name_parts = full_name.split()
+                firstname = name_parts[0]
+                lastname = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+                
+                cursor.execute("""
+                    INSERT INTO users (username, firstname, lastname, email, password_hash)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (
+                    self.temp_user_data['username'],
+                    firstname,
+                    lastname,
+                    self.temp_user_data['email'],
+                    self.temp_user_data['password']
+                ))
+                
+                # Kullanıcı ID'sini al
+                user_id = cursor.lastrowid
+                
+                # Gizlilik sözleşmesi kabulünü kaydet
+                cursor.execute("""
+                    INSERT INTO privacy_policy_acceptance (user_id, policy_version)
+                    VALUES (%s, %s)
+                """, (user_id, 1))
+                
+                # Kullanılan doğrulama kodunu sil
+                cursor.execute("""
+                    DELETE FROM email_verification_codes 
+                    WHERE code = %s AND email = %s
+                """, (code, self.temp_user_data['email']))
+                
+                connection.commit()
+                
+                QtWidgets.QMessageBox.information(self, "Başarılı", "Kayıt işlemi tamamlandı! Giriş yapabilirsiniz.")
+                self.ui.stackedWidget.setCurrentWidget(self.ui.loginPage)
+                
+            else:
+                QtWidgets.QMessageBox.warning(self, "Uyarı", "Geçersiz veya süresi dolmuş kod.")
+                
+        except Exception as e:
+            error_message = f"Doğrulama sırasında bir hata oluştu: {str(e)}"
+            print(error_message)
+            QtWidgets.QMessageBox.critical(self, "Hata", error_message)
 
     def handle_resend_code(self, event):
         # Yeni doğrulama kodu gönderme işlemleri burada yapılacak
         print("Yeni doğrulama kodu gönderiliyor")
 
     def handle_verify_reset_code(self):
-        code = self.ui.resetCodeInput.text()
-        # Şifre sıfırlama kodu kontrolü burada yapılacak
-        print(f"Şifre sıfırlama kodu kontrol ediliyor: {code}")
+        code = self.ui.resetCodeInput.text().strip()
+        email = self.ui.forgotPasswordEmailInput.text().strip()
+        
+        if not code:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen doğrulama kodunu girin.")
+            return
+            
+        try:
+            # Token'ı veritabanında kontrol et
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            cursor.execute("""
+                SELECT created_at FROM password_reset_tokens 
+                WHERE token = %s AND email = %s 
+                AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)
+            """, (code, email))
+            
+            result = cursor.fetchone()
+            
+            if result:
+                # Token geçerli, yeni şifre sayfasına yönlendir
+                self.ui.stackedWidget.setCurrentWidget(self.ui.newPasswordPage)
+                # Kullanıcı e-postasını sakla
+                self.reset_email = email
+                self.reset_token = code
+            else:
+                QtWidgets.QMessageBox.warning(self, "Uyarı", "Geçersiz veya süresi dolmuş kod.")
+                
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Hata", f"Kod doğrulanırken bir hata oluştu: {str(e)}")
 
     def handle_resend_reset_code(self, event):
         # Yeni şifre sıfırlama kodu gönderme işlemleri burada yapılacak
@@ -688,12 +969,39 @@ class LoginDialog(QtWidgets.QDialog):
         new_password = self.ui.newPasswordInput.text()
         confirm_password = self.ui.confirmNewPasswordInput.text()
         
+        if not new_password or not confirm_password:
+            QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen yeni şifrenizi girin.")
+            return
+            
         if new_password != confirm_password:
             QtWidgets.QMessageBox.warning(self, "Uyarı", "Şifreler eşleşmiyor!")
             return
             
-        # Yeni şifre kaydetme işlemleri burada yapılacak
-        print("Yeni şifre kaydediliyor")
+        try:
+            # Yeni şifreyi veritabanında güncelle
+            connection = self.db.get_connection()
+            cursor = connection.cursor()
+            
+            # Şifreyi güncelle
+            cursor.execute("""
+                UPDATE users 
+                SET password_hash = %s 
+                WHERE email = %s
+            """, (new_password, self.reset_email))
+            
+            # Kullanılan token'ı sil
+            cursor.execute("""
+                DELETE FROM password_reset_tokens 
+                WHERE token = %s AND email = %s
+            """, (self.reset_token, self.reset_email))
+            
+            connection.commit()
+            
+            QtWidgets.QMessageBox.information(self, "Başarılı", "Şifreniz başarıyla güncellendi!")
+            self.ui.stackedWidget.setCurrentWidget(self.ui.loginPage)
+            
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self, "Hata", f"Şifre güncellenirken bir hata oluştu: {str(e)}")
 
 
 
