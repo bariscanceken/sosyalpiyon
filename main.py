@@ -9,6 +9,50 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import mysql.connector
+from mysql.connector import Error
+
+
+class DatabaseConnection:
+    def __init__(self):
+        self.connection = None
+        try:
+            self.connection = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password='bariscan',
+                database='sosyalpiyon'
+            )
+            if self.connection.is_connected():
+                print("MySQL veritabanına başarıyla bağlandı")
+                # Veritabanı bağlantısını test et
+                cursor = self.connection.cursor()
+                cursor.execute("SELECT COUNT(*) FROM users")
+                count = cursor.fetchone()[0]
+                print(f"Veritabanında {count} kullanıcı bulundu")
+                cursor.close()
+        except Error as e:
+            print(f"Bağlantı hatası: {e}")
+
+    def get_connection(self):
+        if not self.connection or not self.connection.is_connected():
+            try:
+                self.connection = mysql.connector.connect(
+                    host='localhost',
+                    user='root',
+                    password='bariscan',
+                    database='sosyalpiyon'
+                )
+                print("MySQL veritabanına yeniden bağlandı")
+            except Error as e:
+                print(f"Yeniden bağlantı hatası: {e}")
+        return self.connection
+
+    def close_connection(self):
+        if self.connection and self.connection.is_connected():
+            self.connection.close()
+            print("MySQL bağlantısı kapatıldı")
+
 
 
 class Ui_LoginDialog(object):
@@ -446,6 +490,8 @@ class Ui_LoginDialog(object):
         self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(LoginDialog)
 
+
+
     def retranslateUi(self, LoginDialog):
         _translate = QtCore.QCoreApplication.translate
         LoginDialog.setWindowTitle(_translate("LoginDialog", "SosyalPiyon - Giriş"))    
@@ -529,8 +575,9 @@ class LoginDialog(QtWidgets.QDialog):
         self.ui.setupUi(self)
         
         # Tıklama olaylarını bağla
+        self.db = DatabaseConnection()
         self.ui.loginButton.clicked.connect(self.handle_login)
-        self.ui.registerButton.clicked.connect(self.handle_register)
+        self.ui.registerButton.clicked.connect(self.register)
         self.ui.switchToRegister.mousePressEvent = self.switch_to_register
         self.ui.switchToLogin.mousePressEvent = self.switch_to_login
         self.ui.forgotPasswordLink.mousePressEvent = self.show_forgot_password
@@ -543,6 +590,7 @@ class LoginDialog(QtWidgets.QDialog):
         self.ui.verifyResetCodeButton.clicked.connect(self.handle_verify_reset_code)
         self.ui.resendResetCodeLink.mousePressEvent = self.handle_resend_reset_code
         self.ui.saveNewPasswordButton.clicked.connect(self.handle_save_new_password)
+        
 
     def handle_login(self):
         username = self.ui.usernameInput.text()
@@ -550,7 +598,7 @@ class LoginDialog(QtWidgets.QDialog):
         # Giriş işlemleri burada yapılacak
         print(f"Giriş yapılıyor: {username}")
 
-    def handle_register(self):
+    def register(self):
         if not self.ui.privacyCheckbox.isChecked():
             QtWidgets.QMessageBox.warning(self, "Uyarı", "Lütfen gizlilik sözleşmesini kabul edin.")
             return
@@ -564,6 +612,39 @@ class LoginDialog(QtWidgets.QDialog):
         if password != confirm_password:
             QtWidgets.QMessageBox.warning(self, "Uyarı", "Şifreler eşleşmiyor!")
             return
+        
+        else:
+            try:
+
+                full_name = self.ui.fullNameInput.text().strip()
+                name_parts = full_name.split()
+                firstname = name_parts[0]
+                lastname = " ".join(name_parts[1:]) if len(name_parts) > 1 else ""
+                connection = self.db.get_connection()
+                cursor = self.db.get_connection().cursor()
+
+                cursor.execute("""
+                    INSERT INTO users (username, firstname, lastname, email, 
+                                        password_hash)
+                    VALUES (%s, %s, %s, %s, %s)
+                """,(username,firstname,lastname,email,password))
+
+                cursor.execute("""
+                    SELECT * FROM users WHERE username = %s;
+                """,(username,))
+                result = cursor.fetchone()
+                user_id = result[0] if result else None
+
+                cursor.execute("""
+                    INSERT INTO privacy_policy_acceptance (user_id, policy_version)
+                    VALUES (%s, %s)
+                """,(user_id,1))
+                connection.commit()
+                QtWidgets.QMessageBox.information(self, "Başarılı", "Kayıt başarılı!")
+            except Exception as e:
+                QtWidgets.QMessageBox.critical(self, "Hata", f"Veritabanı hatası: {e}")
+                print(f"Veritabanı hatası: {e}")
+
             
         # Kayıt işlemleri burada yapılacak
         print(f"Kayıt yapılıyor: {username}")
@@ -615,9 +696,11 @@ class LoginDialog(QtWidgets.QDialog):
         print("Yeni şifre kaydediliyor")
 
 
+
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    window = LoginDialog()
-    window.show()
+    login_dialog = LoginDialog()
+    login_dialog.show()
     sys.exit(app.exec_())
