@@ -15,7 +15,7 @@ from itsdangerous import URLSafeTimedSerializer
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
+import bcrypt
 import random
 import string
 
@@ -606,11 +606,22 @@ class LoginDialog(QtWidgets.QDialog):
         conn = self.db.get_connection()
         cursor = conn.cursor()
 
-        cursor.execute("""
-            SELECT * FROM users WHERE username = %s AND password_hash = %s
-        """, (username, password))
-
+        cursor.execute("SELECT password_hash FROM users WHERE username = %s", (username,))
         result = cursor.fetchone()
+
+        if result:
+            stored_hash = result[0].encode('utf-8')  # DB'deki hash string -> bytes
+
+            if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
+                print("Giriş başarılı")
+                # buraya giriş sonrası işlemler
+            else:
+                print("Hatalı şifre")
+        else:
+            print("Kullanıcı bulunamadı")
+
+        cursor.close()
+        conn.close()
 
 
 
@@ -894,7 +905,7 @@ class LoginDialog(QtWidgets.QDialog):
                     firstname,
                     lastname,
                     self.temp_user_data['email'],
-                    self.temp_user_data['password']
+                    bcrypt.hashpw(self.temp_user_data['password'].encode('utf-8'), bcrypt.gensalt())
                 ))
                 
                 # Kullanıcı ID'sini al
@@ -987,7 +998,7 @@ class LoginDialog(QtWidgets.QDialog):
                 UPDATE users 
                 SET password_hash = %s 
                 WHERE email = %s
-            """, (new_password, self.reset_email))
+            """, (bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()), self.reset_email))
             
             # Kullanılan token'ı sil
             cursor.execute("""
