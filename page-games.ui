@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GamesPage</class>
+ <widget class="QWidget" name="GamesPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+QWidget {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #ffffff;
+    background-color: #1a1a1a;
+}
+QFrame#sidebarFrame {
+    background-color: #2d2d2d;
+}
+QFrame#usersFrame {
+    background-color: #2d2d2d;
+    border-radius: 8px;
+}
+QFrame#mainFrame {
+    background-color: #232323;
+    border-radius: 8px;
+}
+QTabWidget::pane {
+    border: 1px solid #4CAF50;
+    border-radius: 8px;
+    background: #232323;
+}
+QTabBar::tab {
+    background: #2d2d2d;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 8px 8px 0 0;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-right: 2px;
+}
+QTabBar::tab:selected {
+    background: #4CAF50;
+    color: #fff;
+}
+QListWidget {
+    background: #2d2d2d;
+    color: #fff;
+    border: 1px solid #3d3d3d;
+    border-radius: 8px;
+    font-size: 11px;
+}
+QPushButton {
+    background-color: transparent;
+    border: 2px solid #4CAF50;
+    color: #4CAF50;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+}
+QPushButton:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+QLineEdit, QComboBox {
+    background: #2d2d2d;
+    color: #fff;
+    border: 1px solid #3d3d3d;
+    border-radius: 8px;
+    font-size: 11px;
+    padding: 4px 8px;
+}
+   </string>
+  </property>
+  <layout class="QHBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QFrame" name="sidebarFrame">
+     <property name="minimumWidth">
+      <number>150</number>
+     </property>
+     <layout class="QVBoxLayout" name="sidebarLayout">
+      <item>
+       <widget class="QLabel" name="sidebarTitle">
+        <property name="text">
+         <string>Menü</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="homeButton">
+        <property name="text">
+         <string>Ana Sayfa</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="profileButton">
+        <property name="text">
+         <string>Profil</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="notificationsButton">
+        <property name="text">
+         <string>Bildirimler</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="settingsButton">
+        <property name="text">
+         <string>Ayarlar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="logoutButton">
+        <property name="text">
+         <string>Çıkış</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="savedButton">
+        <property name="text">
+         <string>Kaydedilenler</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="gamesButton">
+        <property name="text">
+         <string>Oyunlar</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="usersFrame">
+     <property name="minimumWidth">
+      <number>180</number>
+     </property>
+     <layout class="QVBoxLayout" name="usersLayout">
+      <item>
+       <widget class="QLabel" name="usersTitle">
+        <property name="text">
+         <string>Popüler Oyunlar</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-size: 16px; font-weight: bold; color: #4CAF50;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="usersList"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QFrame" name="mainFrame">
+     <layout class="QVBoxLayout" name="mainFrameLayout">
+      <item>
+       <widget class="QPushButton" name="addGameButton">
+        <property name="text">
+         <string>Oyun Ekle</string>
+        </property>
+        <property name="maximumWidth">
+         <number>120</number>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">margin-bottom: 10px;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="searchSortLayout">
+        <item>
+         <widget class="QLineEdit" name="searchLineEdit">
+          <property name="placeholderText">
+           <string>Oyun veya oyuncu ara...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="sortComboBox">
+          <item>
+           <property name="text">
+            <string>Tarihe Göre</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Skora Göre</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Oyuncu Adına Göre</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Popülerliğe Göre</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="gamesTabWidget">
+        <widget class="QWidget" name="allGamesTab">
+         <attribute name="title">
+          <string>Tüm Oyunlar</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="allGamesLayout">
+          <item>
+           <widget class="QListWidget" name="allGamesList"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="myGamesTab">
+         <attribute name="title">
+          <string>Benim Oyunlarım</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="myGamesLayout">
+          <item>
+           <widget class="QListWidget" name="myGamesList"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui> 
